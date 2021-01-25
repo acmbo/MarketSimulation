@@ -5,65 +5,58 @@ Created on Sun Sep  1 21:25:33 2019
 @author: Stephan
 """
 
-
-
-
 import pandas as pd
 import numpy as np
 import datetime
-import Marketactor
+from market import Marketactor
 
-'''MarketClass Skript:
-    
-Defines a market which Simulate a certain Time of Steps. Consist of Buyers and
-Sellers, which can trade with each other. '''
+
         
 class market:
-    
+    '''MarketClass Skript:
+
+    Defines a market which Simulate a certain Time of Steps. Consist of Buyers and
+    Sellers, which can trade with each other. '''
     def __init__(self, ListofBuyer, ListofSeller):
         self.ListofBuyer = ListofBuyer
         self.ListofSeller = ListofSeller
         self.MultipleSells = False
         self.Market_Metadata = pd.DataFrame(columns=['Time', 'Buyer', 'Seller','Count_Items','Price','Bid'])
+
     def listallBuyer(self):
         return(self.ListofBuyer)
     
     def listallSeller(self):
         return(self.ListofSeller)
-    
-   
-    
-############################################Functions#########################
         
-    '''Buy function wich change the Data from Buyer and Trader according to the
-    Attributes of the Buyfunction'''    
     def Buy(self, Buyer, Seller, int_HowMuch, time):
-            Buyer.account -= Seller.price * int_HowMuch
-            Buyer.items += int_HowMuch
-            Seller.items -= int_HowMuch
-            Seller.account += Seller.price * int_HowMuch
-            Metadata = {'Time':[time],
-                        'Buyer':[Buyer.name],
-                        'Seller':[Seller.name],
-                        'Count_Items':[int_HowMuch],
-                        'Price':[Seller.price],
-                        'Bid':[Buyer.bid]
-                        }
-            df_meta = pd.DataFrame(Metadata)
-            Buyer.UpdateMetaData(df_meta)
-            Seller.UpdateMetaData(df_meta)
-             
-            self.Market_Metadata = self.Market_Metadata.append(df_meta)
-            
-            if self.MultipleSells == False:
-                Buyer.desiretobuy = False
-                Seller.desiretosell = False
-            return()
+        '''Buy function wich change the Data from Buyer and Trader according to the
+        Attributes of the Buyfunction'''
+        Buyer.account -= Seller.price * int_HowMuch
+        Buyer.items += int_HowMuch
+        Seller.items -= int_HowMuch
+        Seller.account += Seller.price * int_HowMuch
+        Metadata = {'Time':[time],
+                    'Buyer':[Buyer.name],
+                    'Seller':[Seller.name],
+                    'Count_Items':[int_HowMuch],
+                    'Price':[Seller.price],
+                    'Bid':[Buyer.bid]
+                    }
+        df_meta = pd.DataFrame(Metadata)
+        Buyer.UpdateMetaData(df_meta)
+        Seller.UpdateMetaData(df_meta)
+
+        self.Market_Metadata = self.Market_Metadata.append(df_meta)
+
+        if self.MultipleSells == False:
+            Buyer.desiretobuy = False
+            Seller.desiretosell = False
+        return()
 
 
-
-    '''Get Pricelist from all the Sellers on the market'''
     def GetPriceList(self,ListofSeller):
+        '''Get Pricelist from all the Sellers on the market'''
         #Get Preislist. Bound to Order of the List
         PriceList = {}
         
@@ -74,20 +67,22 @@ class market:
         return(PriceList)
 
 
-    '''Adds  a Random Seller to the market'''
+
     def AddRandomSeller(self,name1,upperlimit,lowerlimit):
-        self.ListofSeller.append(Marketactor.market_Seller(name = name1, 
-                                           upperlimit = np.random.randint(lowerlimit,upperlimit+1),
-                                           lowerlimit = np.random.randint(0,lowerlimit),
-                                           account = 0,
-                                           items = 100))
-    '''Adds  a Random Buyer to the market'''
+        '''Adds  a Random Seller to the market'''
+        self.ListofSeller.append(Marketactor.market_Seller(name = name1,
+                                                           upperlimit = np.random.randint(lowerlimit,upperlimit+1),
+                                                           lowerlimit = np.random.randint(0,lowerlimit),
+                                                           account = 0,
+                                                           items = 100))
+
     def AddRandomBuyer(self,name1, upperlimit,lowerlimit):
-        self.ListofBuyer.append(Marketactor.market_Buyer(name = name1, 
-                                           upperlimit = np.random.randint(lowerlimit,upperlimit+1),
-                                           lowerlimit = np.random.randint(0,lowerlimit),
-                                           account = 1000,
-                                           items = 0))
+        '''Adds  a Random Buyer to the market'''
+        self.ListofBuyer.append(Marketactor.market_Buyer(name = name1,
+                                                         upperlimit = np.random.randint(lowerlimit,upperlimit+1),
+                                                         lowerlimit = np.random.randint(0,lowerlimit),
+                                                         account = 1000,
+                                                         items = 0))
     
     
         
