@@ -79,23 +79,23 @@ class market_Buyer(marketactor):
         
 
 
-    def ChooseMinimumSeller(self, dict_PriceList):
+    def ChooseMinimumSeller(self, dict_PriceList,wanteditems=1):
         '''Function for Choosing a seller from the Price list. This function just chooses
         a price by looking if its the lowest price available'''
         #Seller nach kleinsten Preis wählen
-        MinPreis = min(dict_PriceList.values())
+        MinPreis = min(list(dict_PriceList.values())*wanteditems)
         NameSellerMinPreis = list(dict_PriceList.keys())[list(dict_PriceList.values()).index(MinPreis)]
         return(NameSellerMinPreis)
         
         
 
-    def ChooseSeller_MinDistBid(self,dict_PriceList):
+    def ChooseSeller_MinDistBid(self,dict_PriceList,wanteditems=1):
         ''' Function for choosing a price by evaluating the difference between a bid from the
         buyer and the price of the seller. It gets the bid of the buyer and chooses the
         price fromthe pricelist with the smallest difference'''
         #Seller wird durch die Kleinste Distantz zum Bid gewählt
         
-        List_prices = list(dict_PriceList.values())
+        List_prices = list(dict_PriceList.values())*wanteditems
         List_prices_checked = []
         
         for x in range(0,len(List_prices)):
@@ -109,7 +109,7 @@ class market_Buyer(marketactor):
         
         
 
-    def ChooseSeller(self, dict_PriceList, randomOrd = False):
+    def ChooseSeller(self, dict_PriceList, randomOrd = False, wanteditems=1):
         '''Function for chosing a price from the difference to the bid. It also checks,
         if the price is within the Bounds of a Boundry. The order, in which
         the price is evaluatetd can be random, there choose randomOrd = true.
@@ -122,17 +122,17 @@ class market_Buyer(marketactor):
 
         #Filtern welcher Preis in einer Bestimmten Entfernung zum Bid ist. Hier immer 
         # die Hälfte der Differenz zwischen den Grenzen und dem Aktuellen bid.
-        def within_Boundries(price):
-            if dict_PriceList[price] <= (self.upperlimit-(self.upperlimit-self.bid)/2) and dict_PriceList[price] >= (self.lowerlimit+(self.bid-self.lowerlimit)/2):
-                return dict_PriceList[price]
+        def within_Boundries(actor, wanteditems):
+            if dict_PriceList[actor] * wanteditems <= (self.upperlimit-(self.upperlimit-self.bid)/2) and dict_PriceList[actor] * wanteditems >= (self.lowerlimit+(self.bid-self.lowerlimit)/2):
+                return dict_PriceList[actor]
         #Gibt Liste mit Namen der Gefilterten Preise raus
-        PriceswithinBound = list(filter(within_Boundries, dict_PriceList.keys()))
+        PriceswithinBound = list(filter(lambda x: within_Boundries(x, wanteditems), dict_PriceList.keys()))
         
         #Erzeuge mit Namenliste neue Dict mit den Preisen im Filter
         new_dict_PriceList ={}
         
         for names in PriceswithinBound:
-             new_dict_PriceList[names] = dict_PriceList[names]
+             new_dict_PriceList[names] = dict_PriceList[names] * wanteditems
         
         if len(new_dict_PriceList)==0:
             return(None)
@@ -145,10 +145,10 @@ class market_Buyer(marketactor):
             if randomOrd == True:
                 range1 = random.sample(range(0,len(List_prices)), len(List_prices))
                 for x in range1:
-                    List_prices_checked.append(abs(List_prices[x]-self.bid))
+                    List_prices_checked.append(abs(List_prices[x]-self.bid*wanteditems))
             else:
                 for x in range(0,len(List_prices)):
-                    List_prices_checked.append(abs(List_prices[x]-self.bid))
+                    List_prices_checked.append(abs(List_prices[x]-self.bid*wanteditems))
             
             ChoosenPreis = List_prices_checked.index(min(List_prices_checked))
             ChoosenPreis = List_prices[ChoosenPreis]
@@ -159,7 +159,7 @@ class market_Buyer(marketactor):
         
 
       
-    def GenerateBid(self, Loop, dict_PriceList):
+    def GenerateBid(self, Loop, dict_PriceList, DiscountIncreaseVal=0.01):
         '''Function for generating a bid. The bid is first generated randomly in
         the generation of the class, then here it will get a rise, when a buyer coudnt
         make a transaction. If he makes a transaction he makes the bid lower, (because
@@ -170,9 +170,9 @@ class market_Buyer(marketactor):
         Sellcounts = len(self.Metadata[self.Metadata.Time == Loop-1])
         ##if he has a made asel reduce the next bid
         if Sellcounts > 0:
-            bed = self.bid - self.bid*0.01
+            bed = self.bid - self.bid*DiscountIncreaseVal
             if not bed < self.lowerlimit:
-              self.bid -= self.bid*0.01
+              self.bid -= self.bid*DiscountIncreaseVal
         
         ### if he didnt made a sell, rise or lower bid accordingly
         ### if his bid is way to low, the price needs to be raised!
@@ -182,16 +182,22 @@ class market_Buyer(marketactor):
             MaxPreis = min(dict_PriceList.values())
             
             if self.bid > MaxPreis:
-                bed = self.bid - self.bid*0.01
+                bed = self.bid - self.bid*DiscountIncreaseVal
                 if not bed < self.lowerlimit:
-                    self.bid -= self.bid*0.01
+                    self.bid -= self.bid*DiscountIncreaseVal
                     
             if self.bid < MinPreis:
-                bed = self.bid + self.bid*0.01
+                bed = self.bid + self.bid*DiscountIncreaseVal
                 if not bed > self.upperlimit:
-                    self.bid += self.bid*0.01
+                    self.bid += self.bid*DiscountIncreaseVal
         
-        
+    def evaluateToBuy(self):
+        ''' Simple Function for evaluating, if Buyer want to buy.Compares current bid with availbe Money in account'''
+        if self.account - self.bid > 0:
+            self.desiretobuy = True
+        else:
+            self.desiretobuy = False
+
 
     def UpdateAttributeData(self, Loop):
         '''Update meta data'''
@@ -232,21 +238,26 @@ class market_Seller(marketactor):
         
 
     
-    def GeneratePrice(self, Loop):
+    def GeneratePrice(self, Loop, DiscountIncreaseVal= 0.01):
 
         self.desiretosell = True
         Sellcounts = len(self.Metadata[self.Metadata.Time == Loop-1])
         if Sellcounts > 0:
-            bed = self.price + self.price*0.01
+            bed = self.price + self.price*DiscountIncreaseVal
             if not bed > self.upperlimit:
-              self.price += self.price*0.01
+              self.price += self.price*DiscountIncreaseVal
               
         if Sellcounts ==0:
-            bed = self.price - self.price*0.01
+            bed = self.price - self.price*DiscountIncreaseVal
             if not bed < self.lowerlimit:
-                self.price -= self.price*0.01
+                self.price -= self.price*DiscountIncreaseVal
 
-
+    def evaluateToSell(self):
+        ''' Simple Function for evaluating, if Seller want to sell. Checks current amount items for selling. '''
+        if self.items > 0:
+            self.desiretosell = True
+        else:
+            self.desiretosell = False
 
     def UpdateAttributeData(self, Loop):
         '''Update Metadata'''

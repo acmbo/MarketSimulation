@@ -40,8 +40,8 @@ class market:
                     'Buyer':[Buyer.name],
                     'Seller':[Seller.name],
                     'Count_Items':[int_HowMuch],
-                    'Price':[Seller.price],
-                    'Bid':[Buyer.bid]
+                    'Price':[float(Seller.price)],
+                    'Bid':[float(Buyer.bid)]
                     }
         df_meta = pd.DataFrame(Metadata)
         Buyer.UpdateMetaData(df_meta)
@@ -52,6 +52,9 @@ class market:
         if self.MultipleSells == False:
             Buyer.desiretobuy = False
             Seller.desiretosell = False
+        else:
+            Buyer.evaluateToBuy()
+            Seller.evaluateToSell()
         return()
 
 
@@ -62,26 +65,26 @@ class market:
         
         #erzeuge Preisliste 
         for Seller in ListofSeller:
-            if Seller.desiretosell == True:
+            if Seller.desiretosell == True and Seller.items > 0:
                 PriceList.update({Seller.name : Seller.price})
         return(PriceList)
 
 
 
-    def AddRandomSeller(self,name1,upperlimit,lowerlimit):
+    def AddRandomSeller(self,name1,upperlimit,lowerlimit,items):
         '''Adds  a Random Seller to the market'''
         self.ListofSeller.append(Marketactor.market_Seller(name = name1,
                                                            upperlimit = np.random.randint(lowerlimit,upperlimit+1),
                                                            lowerlimit = np.random.randint(0,lowerlimit),
                                                            account = 0,
-                                                           items = 100))
+                                                           items = items))
 
-    def AddRandomBuyer(self,name1, upperlimit,lowerlimit):
+    def AddRandomBuyer(self,name1, upperlimit,lowerlimit,account):
         '''Adds  a Random Buyer to the market'''
         self.ListofBuyer.append(Marketactor.market_Buyer(name = name1,
                                                          upperlimit = np.random.randint(lowerlimit,upperlimit+1),
                                                          lowerlimit = np.random.randint(0,lowerlimit),
-                                                         account = 1000,
+                                                         account = account,
                                                          items = 0))
     
     
@@ -115,18 +118,17 @@ class market:
             
         for time in range(1,LengthofSimulation):
             #Initialisierung Markt
-            print(time)
+            print('Round: ' + str(time))
             PriceList = self.GetPriceList(self.ListofSeller)
            
             for Seller in self.ListofSeller:
-                Seller.GeneratePrice(time)
-                Seller.items = 100
+                Seller.GeneratePrice(time, DiscountIncreaseVal=0.1)
+                Seller.items = Seller.items+3
+
             for Buyer in self.ListofBuyer:
-                Buyer.GenerateBid(time, PriceList)
-                Buyer.account = 100
-                
-         
-                    
+                Buyer.GenerateBid(time, PriceList, DiscountIncreaseVal=0.05)
+                Buyer.account = Buyer.account + 25
+
             #----Update Datatable of Classes
             for Buyer in self.ListofBuyer:
                 Buyer.UpdateAttributeData(time)
@@ -135,23 +137,49 @@ class market:
                 
             for y in range(0,len(self.ListofBuyer)):
             #-------------Look For price-------------------
-                if self.ListofBuyer[y].desiretobuy == True:
-            
+
+                AlreadyChoosenSeller = [] # Variable to store already visited sellers for multiple buying
+
+                while self.ListofBuyer[y].desiretobuy == True:
+
                     PriceList = self.GetPriceList(self.ListofSeller)
-                    
-                    #Finde passenden Händler
-                    if not self.ListofBuyer[y].ChooseSeller(PriceList, randomOrd = True) == None:
-                        ChosenSeller = self.ListofBuyer[y].ChooseSeller(PriceList, randomOrd = True)
-                        
-                        #Finde Seller durch Namen
-                        for x in range(0, len(self.ListofSeller)):
-                            if ChosenSeller == self.ListofSeller[x].name:
-                                ChoosenSellerIndex = x
-                            
-                        #Wenn Budget höher als Preis und noch der Händler was im Store hat->Kaufen
-                        if self.ListofBuyer[y].account >= self.ListofSeller[ChoosenSellerIndex].price and self.ListofSeller[ChoosenSellerIndex].items >= wanteditems: 
-                            self.Buy(self.ListofBuyer[y], self.ListofSeller[ChoosenSellerIndex], wanteditems, time=time)
-                            numbertransaktions += 1
+
+                    if not self.ListofBuyer[y].ChooseSeller_MinDistBid(PriceList) == None:
+                        # Finde passenden Händler
+                        ChosenSeller = self.ListofBuyer[y].ChooseSeller_MinDistBid(PriceList, wanteditems=wanteditems)
+
+                        print('SeenSellr: ', str(AlreadyChoosenSeller))
+
+                        if not ChosenSeller == None and ChosenSeller not in AlreadyChoosenSeller:
+                            #Finde Seller durch Namen
+                            for x in range(0, len(self.ListofSeller)):
+                                if ChosenSeller == self.ListofSeller[x].name:
+                                    ChoosenSellerIndex = x
+
+                            #Wenn Budget höher als Preis und noch der Händler was im Store hat->Kaufen
+                            while self.ListofBuyer[y].desiretobuy == True:
+
+                                if self.ListofBuyer[y].account >= self.ListofSeller[ChoosenSellerIndex].price * wanteditems and self.ListofSeller[ChoosenSellerIndex].items >= wanteditems:
+                                    #Buy something
+                                    self.Buy(self.ListofBuyer[y], self.ListofSeller[ChoosenSellerIndex], wanteditems, time=time)
+                                    numbertransaktions += 1
+
+                                    #Leave loop if only one buy is activated
+                                    if MultipleSells == False:
+                                        self.ListofBuyer[y].desiretobuy = False
+
+                                else:
+                                    # self.ListofBuyer[y].desiretobuy = False
+                                    break
+
+                        else:
+                            self.ListofBuyer[y].desiretobuy = False
+
+                        AlreadyChoosenSeller.append(ChosenSeller)
+
+                    else:
+                        #If no Seller found exit loop
+                        self.ListofBuyer[y].desiretobuy = False
               
         endtime = datetime.datetime.now()
         
