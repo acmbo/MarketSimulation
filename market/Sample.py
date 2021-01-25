@@ -56,8 +56,8 @@ if __name__ == '__main__':
                                 wanteditems = 1,            # How many items are transfered with one buy
                                 MultipleSells = True)      # How can an actor buy multiple items in one round
 
-    #Plott the Results
 
+    #Plott the Results - choose a command and decommend it with matplotlib together
     #import matplotlib.pyplot as plt
 
     #mv.AllPricesSeller(market)
@@ -68,13 +68,15 @@ if __name__ == '__main__':
     #plt.savefig('ActorPerformance.png', dpi=300)
     #mv.BidRande(market)
     #plt.savefig('BidRande.png', dpi=300)
-    mv.BuyerBidandAccount(market)
+    #mv.BuyerBidandAccount(market)
     #plt.savefig('BuyerBidandAccount.png', dpi=300)
-    mv.SellerPriceandAccount(market)
+    #mv.SellerPriceandAccount(market)
     #plt.savefig('SellerPriceandAccount.png', dpi=300)
     #mv.MeanPriceBid(market)
     #plt.savefig('MeanPriceBid.png', dpi=300)
     #mv.AllBidBuyer(market)
     #plt.savefig('AllBidBuyer.png', dpi=300)
-    mv.SellerPriceandItems(market)
-    mv.BuyerBidandItems(market)
+    #mv.SellerPriceandItems(market)
+    #plt.savefig('SellerPriceandItems.png', dpi=300)
+    #mv.BuyerBidandItems(market)
+    #plt.savefig('BuyerBidandItems.png', dpi=300)

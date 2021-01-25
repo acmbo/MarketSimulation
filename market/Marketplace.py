@@ -148,7 +148,7 @@ class market:
                         # Finde passenden Händler
                         ChosenSeller = self.ListofBuyer[y].ChooseSeller_MinDistBid(PriceList, wanteditems=wanteditems)
 
-                        print('SeenSellr: ', str(AlreadyChoosenSeller))
+                        #print('SeenSellr: ', str(AlreadyChoosenSeller))
 
                         if not ChosenSeller == None and ChosenSeller not in AlreadyChoosenSeller:
                             #Finde Seller durch Namen
