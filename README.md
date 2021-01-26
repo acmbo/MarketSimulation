@@ -13,9 +13,9 @@ the changes within the market.
 
 ## Content
 
-1. [Creating a market](docs\sample.md)
-2. [The Marketplace](docs\marketplace.md)
-3. [Market actors](docs\marketactor.md)
+1. [Creating a market](docs/sample.md)
+2. [The Marketplace](docs/marketplace.md)
+3. [Market actors](docs/marketactor.md)
 
 
 ## Credits
