@@ -79,7 +79,7 @@ def MeanPriceBid(market):
     plt.ylabel('Money - Unit')
     plt.xlabel('Time')
     plt.title('Bid and price development over time')
-    plt.legend(loc='upper left',
+    plt.legend(loc='upper right',
               fancybox=True)
     plt.tight_layout()
     plt.show() 

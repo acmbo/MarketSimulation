@@ -54,5 +54,5 @@ of all prices by the sellers:
 
 Or you can see the progress of every actor within the market by looking at their respective bids/prices and account/itemstorage:
 
-![Seller prices and items](./doc2.png "Seller prices and items")
-![Buyer prices and items](./doc3.png "Buyers prices and items")
+![Seller prices and items](./doc2.png "Seller prices and items" =300x)
+![Buyer prices and items](./doc3.png "Buyers prices and items" =300x)
