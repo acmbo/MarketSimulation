@@ -17,7 +17,7 @@ A simulation of ideal markets can reveal behaviours that produce better performa
 predetermined behaviours can change the result accross the whole market, as shown in the picture below. An 
 agent-based approach can be used to implement and present these quickly. 
 
-<img src="/docs/MeanPriceBid.png" width="300" />
+<img src="/docs/MeanPriceBid.png" width="400" />
 
 
 ## Content
