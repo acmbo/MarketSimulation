@@ -1,6 +1,7 @@
 import unittest
 import pandas as pd
 
+from context import market
 from market.Marketactor import marketactor, market_Buyer, market_Seller
 
 class TestActors(unittest.TestCase):
