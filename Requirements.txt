@@ -1,5 +1,0 @@
-Tested for:
--Python 3.6 or above
--Pandas
--numpy
--matplotlib
