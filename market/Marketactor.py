@@ -243,14 +243,18 @@ class market_Seller(marketactor):
         self.desiretosell = True
         Sellcounts = len(self.Metadata[self.Metadata.Time == Loop-1])
         if Sellcounts > 0:
-            bed = self.price + self.price*DiscountIncreaseVal
+            bed = self.price*(1+DiscountIncreaseVal)
+            
             if not bed > self.upperlimit:
-              self.price += self.price*DiscountIncreaseVal
+              self.price = bed
               
         if Sellcounts ==0:
-            bed = self.price - self.price*DiscountIncreaseVal
+            print('dsic:',str(DiscountIncreaseVal))
+            print(self.price)
+            bed = self.price*(1-DiscountIncreaseVal)
             if not bed < self.lowerlimit:
-                self.price -= self.price*DiscountIncreaseVal
+                self.price = bed
+
 
     def evaluateToSell(self):
         ''' Simple Function for evaluating, if Seller want to sell. Checks current amount items for selling. '''

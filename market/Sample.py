@@ -58,7 +58,7 @@ if __name__ == '__main__':
 
 
     #Plott the Results - choose a command and decommend it with matplotlib together
-    import matplotlib.pyplot as plt
+    #import matplotlib.pyplot as plt
 
     #mv.AllPricesSeller(market)
     #plt.savefig('allPircesSeller.png' ,dpi=300)
