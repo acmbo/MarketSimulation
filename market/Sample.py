@@ -58,7 +58,7 @@ if __name__ == '__main__':
 
 
     #Plott the Results - choose a command and decommend it with matplotlib together
-    import matplotlib.pyplot as plt
+    #import matplotlib.pyplot as plt
 
     #mv.AllPricesSeller(market)
     #plt.savefig('allPircesSeller.png' ,dpi=300)
@@ -72,8 +72,8 @@ if __name__ == '__main__':
     #plt.savefig('BuyerBidandAccount.png', dpi=300)
     #mv.SellerPriceandAccount(market)
     #plt.savefig('SellerPriceandAccount.png', dpi=300)
-    mv.MeanPriceBid(market)
-    plt.savefig('MeanPriceBid.png', dpi=300)
+    #mv.MeanPriceBid(market)
+    #plt.savefig('MeanPriceBid.png', dpi=300)
     #mv.AllBidBuyer(market)
     #plt.savefig('AllBidBuyer.png', dpi=300)
     #mv.SellerPriceandItems(market)
