@@ -54,5 +54,5 @@ of all prices by the sellers:
 
 Or you can see the progress of every actor within the market by looking at their respective bids/prices and account/itemstorage:
 
-<img src="./doc2.png" width="300" />
-<img src="./doc3.png" width="300" />
+<img src="./doc2.png" width="500" />
+<img src="./doc3.png" width="500" />
